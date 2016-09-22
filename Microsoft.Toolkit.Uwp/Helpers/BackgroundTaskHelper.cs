@@ -29,9 +29,8 @@ namespace Microsoft.Toolkit.Uwp.Helpers
         /// <typeparam name="TBackgroundTaskType">The type of the background task.</typeparam>
         /// <returns>True/False indicating if a background task was registered or not</returns>
         public static bool IsBackgroundTaskRegistered<TBackgroundTaskType>()
-        {
-            return BackgroundTaskRegistration.AllTasks.Any(t => t.Value.Name == typeof(TBackgroundTaskType).FullName);
-        }
+            where TBackgroundTaskType : IBackgroundTask
+            => BackgroundTaskRegistration.AllTasks.Any(t => t.Value.Name == typeof(TBackgroundTaskType).FullName);
 
         /// <summary>
         /// Register a background task for the application with conditions
@@ -42,6 +41,7 @@ namespace Microsoft.Toolkit.Uwp.Helpers
         /// <param name="conditions">Optional conditions for the background task to run with</param>
         /// <returns>Background Task that was registered with the system</returns>
         public static async Task<BackgroundTaskRegistration> RegisterAsync<TBackgroundTaskType>(IBackgroundTrigger trigger, bool enforceConditions = true, params IBackgroundCondition[] conditions)
+            where TBackgroundTaskType : IBackgroundTask
         {
             // Check if the task is already registered.
             if (IsBackgroundTaskRegistered<TBackgroundTaskType>())
@@ -83,6 +83,7 @@ namespace Microsoft.Toolkit.Uwp.Helpers
         /// </summary>
         /// <typeparam name="TBackgroundTaskType">The type of the background task</typeparam>
         public static void Unregister<TBackgroundTaskType>()
+            where TBackgroundTaskType : IBackgroundTask
         {
             if (IsBackgroundTaskRegistered<TBackgroundTaskType>() == false)
             {
@@ -100,6 +101,8 @@ namespace Microsoft.Toolkit.Uwp.Helpers
         /// </summary>
         /// <typeparam name="TBackgroundTaskType">Type of the background task class</typeparam>
         /// <returns>Background task if there is such background task registered. Otherwise, null</returns>
-        public static IBackgroundTaskRegistration GetBackgroundTask<TBackgroundTaskType>() => BackgroundTaskRegistration.AllTasks.FirstOrDefault(t => t.Value.Name == typeof(TBackgroundTaskType).FullName).Value;
+        public static IBackgroundTaskRegistration GetBackgroundTask<TBackgroundTaskType>()
+            where TBackgroundTaskType : IBackgroundTask
+            => BackgroundTaskRegistration.AllTasks.FirstOrDefault(t => t.Value.Name == typeof(TBackgroundTaskType).FullName).Value;
     }
 }
